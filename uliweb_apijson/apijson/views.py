@@ -118,7 +118,7 @@ class ApiJson(object):
                 params_role = "UNKNOWN"
         elif params_role != "UNKNOWN":
             if not hasattr(request,"user"):
-                return json({"code":400,"msg":"no user for role '%s'"%(params_role)})
+                return json({"code":400,"msg":"no login user for role '%s'"%(params_role)})
         if params_role not in roles:
             return json({"code":400,"msg":"'%s' not accessible by role '%s'"%(model_name,params_role)})
         if params_role == "UNKNOWN":
@@ -189,7 +189,7 @@ class ApiJson(object):
     def _filter_owner(self,model,model_setting,q):
         owner_filtered = False
         if hasattr(model,"owner_condition"):
-            q = q.filter(model.owner_condition())
+            q = q.filter(model.owner_condition(request.user.id))
             owner_filtered = True
         if not owner_filtered:
             user_id_field = model_setting.get("user_id_field")

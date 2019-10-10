@@ -90,10 +90,13 @@ class ApiJsonModelQuery(object):
         params_role = self.params.get("@role")
         
         if not params_role:
-            if request.user:
+            if hasattr(request,"user"):
                 params_role = "LOGIN"
             else:
                 params_role = "UNKNOWN"
+        elif params_role != "UNKNOWN":
+            if not hasattr(request,"user"):
+                raise UliwebError("no login user for role '%s'"%(params_role))
         if params_role not in roles:
             raise UliwebError("'%s' not accessible by role '%s'"%(self.name,params_role))
         if params_role == "UNKNOWN":
@@ -114,8 +117,8 @@ class ApiJsonModelQuery(object):
             try:
                 query_count = int(query_count)
             except ValueError as e:
-                log.error("bad param in '%s': '%s'"%(n,self.query_params))
-                raise UliwebError("@count should be an int, now '%s'"%(query_count))
+                log.error("bad param in '%s': '%s'"%(query_count,self.query_params))
+                raise UliwebError("@count should be an int, but get '%s'"%(query_count))
         self.query_count = query_count
 
         query_page = self.query_params.get("@page")
@@ -124,10 +127,10 @@ class ApiJsonModelQuery(object):
             try:
                 query_page = int(query_page)
             except ValueError as e:
-                log.error("bad param in '%s': '%s'"%(n,self.query_params))
-                raise UliwebError("@page should be an int, now '%s'"%(query_page))
+                log.error("bad param in '%s': '%s'"%(query_page,self.query_params))
+                raise UliwebError("@page should be an int, but get '%s'"%(query_page))
             if query_page<0:
-                raise UliwebError("page should >0, now is '%s'"%(query_page))
+                raise UliwebError("page should >0, but get '%s'"%(query_page))
         self.query_page = query_page
 
         #https://github.com/TommyLemon/APIJSON/blob/master/Document.md#32-%E5%8A%9F%E8%83%BD%E7%AC%A6
@@ -142,15 +145,15 @@ class ApiJsonModelQuery(object):
     def _filter_owner(self,q):
         owner_filtered = False
         if hasattr(self.model,"owner_condition"):
-            q = q.filter(model.owner_condition())
+            q = q.filter(self.model.owner_condition(request.user.id))
             owner_filtered = True
         if not owner_filtered:
             user_id_field = self.setting.get("user_id_field")
             if user_id_field:
-                q = q.filter(getattr(model.c,user_id_field)==request.user.id)
+                q = q.filter(getattr(self.model.c,user_id_field)==request.user.id)
                 owner_filtered = True
         if not owner_filtered:
-            raise UliwebError("'%s' cannot filter with owner"%(model_name))
+            raise UliwebError("'%s' cannot filter with owner"%(self.name))
         return q
 
     def _get_array_q(self,params):
@@ -228,7 +231,10 @@ class ApiJsonModelQuery(object):
                     else:
                         sort_key = k
                         sort_order = "asc"
-                    column = getattr(self.model.c,sort_key)
+                    try:
+                        column = getattr(self.model.c,sort_key)
+                    except AttributeError as e:
+                        raise UliwebError("'%s' doesn't have column '%s'"%(self.name,sort_key))
                     q = q.order_by(getattr(column,sort_order)())
             l = [self._get_info(i,True) for i in q]
             self.parent.rdict[self.key] = l
