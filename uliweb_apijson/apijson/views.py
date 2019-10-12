@@ -112,12 +112,12 @@ class ApiJson(object):
         roles = GET.get("roles")
         permission_check_ok = False
         if not params_role:
-            if hasattr(request,"user"):
+            if hasattr(request,"user") and request.user:
                 params_role = "LOGIN"
             else:
                 params_role = "UNKNOWN"
         elif params_role != "UNKNOWN":
-            if not hasattr(request,"user"):
+            if not (hasattr(request,"user") and request.user):
                 return json({"code":400,"msg":"no login user for role '%s'"%(params_role)})
         if params_role not in roles:
             return json({"code":400,"msg":"'%s' not accessible by role '%s'"%(model_name,params_role)})
@@ -200,57 +200,61 @@ class ApiJson(object):
 
     def _expr(self,model,model_param,model_expr):
         if not isinstance(model_expr,list):
-            raise UliwebError("only accept array in @expr: '%s'"%(model_expr))
+            raise UliwebError("only accept array in @expr, but get '%s'"%(model_expr))
         num = len(model_expr)
         if (num<2 or num>3):
-            raise UliwebError("only accept 2 or 3 items in @expr: '%s'"%(model_expr))
+            raise UliwebError("only accept 2 or 3 items in @expr, but get '%s'"%(model_expr))
         op = model_expr[-2]
         if op=='&':
             if num!=3:
-                raise UliwebError("'&'(and) expression need 3 items: '%s'"%(model_expr))
+                raise UliwebError("'&'(and) expression need 3 items, but get '%s'"%(model_expr))
             c1 = self._get_filter_condition(model,model_param,model_expr[0],expr=True)
             c2 = self._get_filter_condition(model,model_param,model_expr[2],expr=True)
             return and_(c1,c2)
         elif op=='|':
             if num!=3:
-                raise UliwebError("'|'(or) expression need 3 items: '%s'"%(model_expr))
+                raise UliwebError("'|'(or) expression need 3 items, but get '%s'"%(model_expr))
             c1 = self._get_filter_condition(model,model_param,model_expr[0],expr=True)
             c2 = self._get_filter_condition(model,model_param,model_expr[2],expr=True)
             return or_(c1,c2)
         elif op=='!':
             if num!=2:
-                raise UliwebError("'!'(not) expression need 2 items: '%s'"%(model_expr))
+                raise UliwebError("'!'(not) expression need 2 items, but get '%s'"%(model_expr))
             return not_(self._get_filter_condition(model,model_param,model_expr[1],expr=True))
         else:
             raise UliwebError("unknown operator: '%s'"%(op))
 
     def _get_filter_condition(self,model,model_param,item,expr=False):
+        #item can be param key, or expr which expected to be a list
         if isinstance(item,list):
             if expr:
                 return self._expr(model,model_param,model_expr=item)
             else:
-                raise UliwebError("item can be array only in @expr: '%s'"%(item))
+                #current implementation won't run here, but keep for safe
+                raise UliwebError("item can be list only in @expr: '%s'"%(item))
         if not isinstance(item,string_types):
+            #current implementation won't run here, but keep for safe
             raise UliwebError("item should be array or string: '%s'"%(item))
         n = item
         if n[0]=="@":
+            #current implementation won't run here, but keep for safe
             raise UliwebError("param key should not begin with @: '%s'"%(n))
         if n[-1]=="$":
             name = n[:-1]
             if hasattr(model,name):
                 return getattr(model.c,name).like(model_param[n])
             else:
-                raise UliwebError("'%s' does not have '%s'"%(model_name,name))
+                raise UliwebError("model does not have this column: '%s'"%(name))
         elif n[-1]=="}" and n[-2]=="{":
             name = n[:-2]
             if hasattr(model,name):
-                # TODO
+                # TODO: https://github.com/APIJSON/APIJSON/blob/master/Document.md#32-%E5%8A%9F%E8%83%BD%E7%AC%A6
                 pass
             raise UliwebError("still not support '%s'"%(name))
         elif hasattr(model,n):
             return getattr(model.c,n)==model_param[n]
         else:
-            raise UliwebError("not support item: '%s'"%(item))
+            raise UliwebError("non-existent column or not support item: '%s'"%(item))
 
     def head(self):
         try:
@@ -286,18 +290,21 @@ class ApiJson(object):
         roles = HEAD.get("roles")
         permission_check_ok = False
         if not params_role:
-            if request.user:
+            if hasattr(request,"user") and request.user:
                 params_role = "LOGIN"
             else:
                 params_role = "UNKNOWN"
         if params_role not in roles:
-            return json({"code":400,"msg":"'%s' not accessible by role '%s'"%(model_name,params_role)})
+            return json({"code":400,"msg":"role '%s' not have permission HEAD for '%s'"%(params_role,model_name)})
         if params_role == "UNKNOWN":
             permission_check_ok = True
+        elif not (hasattr(request,"user") and request.user):
+            return json({"code":400,"msg":"no login user for role '%s'"%(params_role)})
         elif functions.has_role(request.user,params_role):
             permission_check_ok = True
         else:
             return json({"code":400,"msg":"user doesn't have role '%s'"%(params_role)})
+        #current implementation won't run here, but keep for safe
         if not permission_check_ok:
             return json({"code":400,"msg":"no permission"})
 
@@ -381,7 +388,7 @@ class ApiJson(object):
             if roles:
                 for role in roles:
                     if role == "OWNER":
-                        if request.user:
+                        if hasattr(request,"user") and request.user:
                             permission_check_ok = True
                             if user_id_field:
                                 params[user_id_field] = request.user.id
@@ -500,7 +507,7 @@ class ApiJson(object):
             if roles:
                 for role in roles:
                     if role == "OWNER":
-                        if request.user:
+                        if hasattr(request,"user") and request.user:
                             if user_id_field:
                                 if obj.to_dict().get(user_id_field)==request.user.id:
                                     permission_check_ok = True
@@ -534,6 +541,8 @@ class ApiJson(object):
         kwargs = {}
         for k in params:
             if k=="id":
+                continue
+            elif k[0]=="@":
                 continue
             elif hasattr(obj,k):
                 kwargs[k] = params[k]
@@ -621,7 +630,7 @@ class ApiJson(object):
             if roles:
                 for role in roles:
                     if role == "OWNER":
-                        if request.user:
+                        if hasattr(request,"user") and request.user:
                             if user_id_field:
                                 if obj.to_dict().get(user_id_field)==request.user.id:
                                     permission_check_ok = True

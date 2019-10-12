@@ -244,7 +244,7 @@ def test_apijson_get():
     >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
     >>> d = json_loads(r.data)
     >>> print(d)
-    {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'admin', 'nickname': 'Administrator', 'email': 'admin@localhost', 'is_superuser': True, 'last_login': None, 'date_join': '2018-11-01 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 1}}, {'user': {'username': 'usera', 'nickname': 'User A', 'email': 'usera@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-02-02 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 2}}, {'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-03-03 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 3}}, {'user': {'username': 'userc', 'nickname': 'User C', 'email': 'userc@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-04-04 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 4}}]}
+    {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'admin', 'nickname': 'Administrator', 'email': 'admin@localhost', 'is_superuser': True, 'last_login': None, 'date_join': '2018-01-01 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 1}}, {'user': {'username': 'usera', 'nickname': 'User A', 'email': 'usera@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-02-02 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 2}}, {'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-03-03 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 3}}, {'user': {'username': 'userc', 'nickname': 'User C', 'email': 'userc@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-04-04 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 4}}]}
 
     >>> #query array
     >>> data ='''{
@@ -326,7 +326,7 @@ def test_apijson_get():
     >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("usera"), middlewares=[])
     >>> d = json_loads(r.data)
     >>> print(d)
-    {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'admin', 'nickname': 'Administrator', 'email': 'admin@localhost', 'is_superuser': True, 'last_login': None, 'date_join': '2018-11-01 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 1}}, {'user': {'username': 'usera', 'nickname': 'User A', 'email': 'usera@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-02-02 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 2}}, {'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-03-03 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 3}}]}
+    {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'admin', 'nickname': 'Administrator', 'email': 'admin@localhost', 'is_superuser': True, 'last_login': None, 'date_join': '2018-01-01 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 1}}, {'user': {'username': 'usera', 'nickname': 'User A', 'email': 'usera@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-02-02 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 2}}, {'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'is_superuser': False, 'last_login': None, 'date_join': '2018-03-03 00:00:00', 'image': '', 'active': False, 'locked': False, 'deleted': False, 'auth_type': 'default', 'timezone': '', 'id': 3}}]}
 
     >>> #query array ,@count is bad param
     >>> data ='''{
@@ -567,6 +567,200 @@ def test_apijson_get():
     >>> print(d)
     {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'userc', 'nickname': 'User C', 'email': 'userc@localhost', 'id': 4}}, {'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'id': 3}}]}
 
+    >>> #query array with @expr, bad param which is not list
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":{},
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "only accept array in @expr, but get 'OrderedDict()'"}
+
+    >>> #query array with @expr, bad param which is an empty list
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":[],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "only accept 2 or 3 items in @expr, but get '[]'"}
+
+    >>> #query array with @expr, bad param which is >3 items list
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":["username$","|","username$","|","nickname$"],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "only accept 2 or 3 items in @expr, but get '['username$', '|', 'username$', '|', 'nickname$']'"}
+
+    >>> #query array with @expr, bad param which have bad operator
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":["username$","*","nickname$"],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "unknown operator: '*'"}
+
+    >>> #query array with @expr, bad expr: & only 1 parameter
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":["&","nickname$"],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'&'(and) expression need 3 items, but get '['&', 'nickname$']'"}
+
+    >>> #query array with @expr, bad expr: | only 1 parameter
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":["|","nickname$"],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'|'(or) expression need 3 items, but get '['|', 'nickname$']'"}
+
+    >>> #query array with @expr, bad expr: | only 1 parameter
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "@expr":["username$","!","nickname$"],
+    ...             "username$":"%b%",
+    ...             "nickname$":"%c%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'!'(not) expression need 2 items, but get '['username$', '!', 'nickname$']'"}
+
+    >>> #query array with like
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "username$":"%b%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', '[]': [{'user': {'username': 'userb', 'nickname': 'User B', 'email': 'userb@localhost', 'id': 3}}]}
+
+    >>> #query array with like, but gave a nonexist column
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "nonexist$":"%b%"
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "model does not have this column: 'nonexist'"}
+
+    >>> #query array with a nonexist column
+    >>> data ='''{
+    ...   "[]":{
+    ...     "@count":4,
+    ...     "@page":0,
+    ...     "user":{
+    ...             "@column":"id,username,nickname,email",
+    ...             "@order":"id-",
+    ...             "@role":"ADMIN",
+    ...             "nonexist":1
+    ...         }
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "non-existent column or not support item: 'nonexist'"}
+
     >>> #Association query: Two tables, one to one,ref path is absolute path
     >>> data ='''{
     ...     "moment":{},
@@ -580,6 +774,32 @@ def test_apijson_get():
     >>> print(d)
     {'code': 200, 'msg': 'success', 'moment': {'user_id': 2, 'date': '2018-11-01 00:00:00', 'content': 'test moment', 'picture_list': '[]', 'id': 1}, 'user': {'username': 'usera', 'email': 'usera@localhost', 'id': 2}}
 
+    >>> #Association query: Two tables, one is array, one is single, there is a abs reference to array
+    >>> data ='''{
+    ...     "moment[]":{"moment":{"@count":3}},
+    ...     "user":{
+    ...     "@column": "id,username,email",
+    ...     "id@": "moment[]/1/moment/user_id"
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment[]': [{'moment': {'user_id': 2, 'date': '2018-11-01 00:00:00', 'content': 'test moment', 'picture_list': '[]', 'id': 1}}, {'moment': {'user_id': 3, 'date': '2018-11-02 00:00:00', 'content': 'test moment from b', 'picture_list': '[]', 'id': 2}}, {'moment': {'user_id': 4, 'date': '2018-11-06 00:00:00', 'content': 'test moment from c', 'picture_list': '[]', 'id': 3}}], 'user': {'username': 'userb', 'email': 'userb@localhost', 'id': 3}}
+
+    >>> #Association query: Two tables, one is array, one is single, there is a rel reference to array
+    >>> data ='''{
+    ...     "moment[]":{"moment":{"@count":3}},
+    ...     "user":{
+    ...     "@column": "id,username,email",
+    ...     "id@": "/moment[]/1/moment/user_id"
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/get', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment[]': [{'moment': {'user_id': 2, 'date': '2018-11-01 00:00:00', 'content': 'test moment', 'picture_list': '[]', 'id': 1}}, {'moment': {'user_id': 3, 'date': '2018-11-02 00:00:00', 'content': 'test moment from b', 'picture_list': '[]', 'id': 2}}, {'moment': {'user_id': 4, 'date': '2018-11-06 00:00:00', 'content': 'test moment from c', 'picture_list': '[]', 'id': 3}}], 'user': {'username': 'userb', 'email': 'userb@localhost', 'id': 3}}
+
     >>> #Association query: Two tables, one to one,ref path is relative path
     >>> data ='''{
     ...     "moment":{},
@@ -592,4 +812,216 @@ def test_apijson_get():
     >>> d = json_loads(r.data)
     >>> print(d)
     {'code': 200, 'msg': 'success', 'moment': {'user_id': 2, 'date': '2018-11-01 00:00:00', 'content': 'test moment', 'picture_list': '[]', 'id': 1}, 'user': {'username': 'usera', 'email': 'usera@localhost', 'id': 2}}
+    """
+
+def test_apijson_head():
+    """
+    >>> application = make_simple_application(project_dir='.')
+    >>> handler = application.handler()
+
+    >>> #apijson head
+    >>> data ='''{
+    ...     "moment": {
+    ...         "user_id": 2
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment': {'code': 200, 'msg': 'success', 'count': 1}}
+
+    >>> #apijson head, with a nonexistant model
+    >>> data ='''{
+    ...     "nonexist": {
+    ...         "user_id": 2
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "model 'nonexist' not found"}
+
+    >>> #apijson head, without permission of HEAD
+    >>> data ='''{
+    ...     "privacy": {
+    ...         "@role":"LOGIN",
+    ...         "id": 1
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "role 'LOGIN' not have permission HEAD for 'privacy'"}
+
+    >>> #apijson head, without user
+    >>> data ='''{
+    ...     "privacy": {
+    ...         "@role":"ADMIN",
+    ...         "id": 1
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "no login user for role 'ADMIN'"}
+
+    >>> #apijson head, without user and @role
+    >>> data ='''{
+    ...     "privacy": {
+    ...         "id": 1
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "role 'UNKNOWN' not have permission HEAD for 'privacy'"}
+
+    >>> #apijson head, user don't have role
+    >>> data ='''{
+    ...     "privacy": {
+    ...         "@role":"ADMIN",
+    ...         "id": 1
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("usera"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "user doesn't have role 'ADMIN'"}
+
+    >>> #apijson head, with OWNER
+    >>> data ='''{
+    ...     "moment": {
+    ...         "@role":"OWNER"
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("usera"), middlewares=[])
+    Moment: owner_condition
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment': {'code': 200, 'msg': 'success', 'count': 1}}
+
+    >>> #apijson head, with OWNER but cannot filter with OWNER
+    >>> data ='''{
+    ...     "publicnotice": {
+    ...         "@role":"OWNER"
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("usera"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'publicnotice' cannot filter with owner"}
+
+    >>> #apijson head, with a nonexistant column
+    >>> data ='''{
+    ...     "moment": {
+    ...         "nonexist": 2
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/head', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'moment' don't have field 'nonexist'"}
+    """
+
+def test_apijson_post():
+    """
+    >>> application = make_simple_application(project_dir='.')
+    >>> handler = application.handler()
+
+    >>> #apijson post, without @tag
+    >>> data ='''{
+    ...     "moment": {
+    ...         "content": "new moment for test",
+    ...         "picture_list": ["http://static.oschina.net/uploads/user/48/96331_50.jpg"]
+    ...     }
+    ... }'''
+    >>> r = handler.post('/apijson/post', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "'tag' parameter is needed"}
+
+    >>> #apijson post
+    >>> data ='''{
+    ...     "moment": {
+    ...         "content": "new moment for test",
+    ...         "picture_list": ["http://static.oschina.net/uploads/user/48/96331_50.jpg"]
+    ...     },
+    ...     "@tag": "moment"
+    ... }'''
+    >>> r = handler.post('/apijson/post', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> del d['moment']['date']
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment': {'user_id': 1, 'content': 'new moment for test', 'picture_list': ['http://static.oschina.net/uploads/user/48/96331_50.jpg'], 'id': 4, 'code': 200, 'message': 'success'}}
+
+    >>> #apijson post to a non exist model
+    >>> data ='''{
+    ...     "nonexist": {
+    ...         "content": "new moment for test",
+    ...         "picture_list": ["http://static.oschina.net/uploads/user/48/96331_50.jpg"]
+    ...     },
+    ...     "@tag": "nonexist"
+    ... }'''
+    >>> r = handler.post('/apijson/post', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "model 'nonexist' not found"}
+
+    >>> #apijson post, tag is model which not define in APIJSON_REQUESTS
+    >>> data ='''{
+    ...     "moment": {
+    ...         "content": "new moment for test",
+    ...         "picture_list": ["http://static.oschina.net/uploads/user/48/96331_50.jpg"]
+    ...     },
+    ...     "@tag": "role"
+    ... }'''
+    >>> r = handler.post('/apijson/post', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "tag 'role' not found"}
+
+    >>> #apijson post, tag is model which not define in APIJSON_REQUESTS
+    >>> data ='''{
+    ...     "user": {
+    ...         "username": "test"
+    ...     },
+    ...     "@tag": "user"
+    ... }'''
+    >>> r = handler.post('/apijson/post', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 400, 'msg': "tag 'user' not found"}
+    """
+
+def test_apijson_put():
+    """
+    >>> application = make_simple_application(project_dir='.')
+    >>> handler = application.handler()
+
+    >>> #apijson put
+    >>> data ='''{
+    ...     "moment": {
+    ...         "id": 1,
+    ...         "content": "moment content after change"
+    ...     },
+    ...     "@tag": "moment"
+    ... }'''
+    >>> r = handler.post('/apijson/put', data=data, pre_call=pre_call_as("usera"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment': {'id': 1, 'code': 200, 'msg': 'success', 'count': 1}}
+
+    >>> #apijson put, with @role
+    >>> data ='''{
+    ...     "moment": {
+    ...         "@role": "ADMIN",
+    ...         "id": 1,
+    ...         "content": "moment content after change 2"
+    ...     },
+    ...     "@tag": "moment"
+    ... }'''
+    >>> r = handler.post('/apijson/put', data=data, pre_call=pre_call_as("admin"), middlewares=[])
+    >>> d = json_loads(r.data)
+    >>> print(d)
+    {'code': 200, 'msg': 'success', 'moment': {'id': 1, 'code': 200, 'msg': 'success', 'count': 1}}
     """
