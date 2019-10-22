@@ -422,13 +422,12 @@ class ApiJson(object):
 
         obj = model(**params)
         ret = obj.save()
-        obj_dict = obj.to_dict(convert=False)
-        secret_fields = model_setting.get("secret_fields")
-        if secret_fields:
-            for k in secret_fields:
-                del obj_dict[k]
+        d = obj.to_dict(convert=False)
 
+        obj_dict = {}
         if ret:
+            obj_dict["id"] = d.get("id")
+            obj_dict["count"] = 1
             obj_dict["code"] = 200
             obj_dict["message"] = "success"
         else:
@@ -494,7 +493,7 @@ class ApiJson(object):
             return json({"code":400,"msg":"id '%s' cannot convert to integer"%(params.get("id"))})
         obj = model.get(id_)
         if not obj:
-            return json({"code":400,"msg":"cannot find record id '%s'"%(id_)})
+            return json({"code":400,"msg":"cannot find record which id = '%s'"%(id_)})
 
         permission_check_ok = False
         model_PUT = model_setting.get("PUT")
@@ -513,7 +512,7 @@ class ApiJson(object):
                                     permission_check_ok = True
                                     break
                         else:
-                            return json({"code":400,"msg":"need login user"})
+                            return json({"code":400,"msg":"'OWNER' need login user"})
                     elif role == "UNKNOWN":
                         permission_check_ok = True
                         break
@@ -522,6 +521,7 @@ class ApiJson(object):
                             permission_check_ok = True
                             break
 
+        #current implementation won't run here, but keep for safe
         if not permission_check_ok:
             return json({"code":400,"msg":"no permission"})
 
@@ -617,7 +617,7 @@ class ApiJson(object):
             return json({"code":400,"msg":"id '%s' cannot convert to integer"%(params.get("id"))})
         obj = model.get(id_)
         if not obj:
-            return json({"code":400,"msg":"cannot find record id '%s'"%(id_)})
+            return json({"code":400,"msg":"cannot find record id = '%s'"%(id_)})
 
         permission_check_ok = False
         DELETE = model_setting.get("DELETE")
